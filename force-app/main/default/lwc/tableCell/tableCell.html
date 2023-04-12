@@ -1,0 +1,31 @@
+<template>
+    <template lwc:if={isText}>
+        <div class="slds-truncate" title={value}>{value}</div>
+    </template>
+    <template lwc:elseif={isName}>
+        <div class="slds-truncate" title={value}>
+            <a href={url} target="_blank">{value}</a>
+        </div>
+    </template>
+    <template lwc:elseif={isPicklist}>
+        <c-picklist-combobox
+        object-name={objectName}
+        picklist-field={field}
+        value={value}
+        ></c-picklist-combobox>
+    </template>
+    <template lwc:elseif={isDateTime}> 
+        <lightning-input type="datetime" class="red-icon" name="datetimevalue" label="" value={value} disabled={isDisabled} ></lightning-input>
+    </template>
+    <template lwc:elseif={isDate}>
+        <lightning-input type="date" class="red-icon" name="datevalue" label="" value={value} disabled={isDisabled} ></lightning-input>
+    </template>
+    <template lwc:elseif={isEmail}>
+        <div class="slds-truncate" title={value}>
+            <a href={url} target="_blank">{value}</a>
+        </div>
+    </template>
+    <template lwc:else>
+        <div class="slds-truncate"></div>
+    </template>
+</template>

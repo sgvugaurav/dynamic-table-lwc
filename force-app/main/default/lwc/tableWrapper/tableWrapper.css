@@ -1,0 +1,44 @@
+.red-icon {
+    --lwc-colorTextIconDefault: red;
+}
+
+.red-background {
+    background-color: red;
+}
+
+.white-text {
+    color: white;
+}
+
+table {
+    border-radius: 10px;
+}
+
+table thead tr th:first-child {
+    border-top-left-radius: 10px;
+}
+
+table thead tr th:last-child {
+    border-top-right-radius: 10px;
+}
+
+.label {
+    text-align: center;
+    font-size: large;
+}
+
+.green-background {
+    background-color: green;
+}
+
+.table-container {
+    border: 2px solid red;
+}
+
+.my-brand {
+    --sds-c-button-outline-brand-color-border: red;
+    --slds-c-button-shadow: red;
+    --slds-c-button-shadow-focus: red;
+    --slds-c-button-text-color: red;
+    --slds-c-button-text-color-hover: red;
+}

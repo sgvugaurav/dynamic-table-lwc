@@ -1,0 +1,54 @@
+<template>
+    <div class="slds-box slds-theme_shade">
+        <div class="table-container slds-p-top_x-small slds-p-left_x-small slds-p-right_x-small slds-p-bottom_x-small">
+            <div>
+                <p class="label">{label}</p>
+            </div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+                aria-label="Example table of Opportunities with vertical borders">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="red-background white-text" scope="col">
+                            <div class="slds-truncate" title="Serial Number">#</div>
+                        </th>
+                        <template for:each={headers} for:item="header">
+                            <th key={header} class="red-background white-text" scope="col">
+                                <div class="slds-truncate" title={header}>{header}</div>
+                            </th>
+                        </template>
+                        <th class="red-background white-text">
+                            <div class="slds-truncate" title="Delete Button"></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template lwc:if={records}>
+                        <template for:each={records} for:item="rec">
+                            <tr key={rec.Id} class={rec.styleClasses}>
+                                <td class="slds-cell-edit slds-cell-error" role="gridcell">
+                                    <span class="slds-row-number slds-text-body_small slds-text-color_weak"></span>
+                                </td>
+                                <template for:each={fields} for:item="field">
+                                    <td key={field.fieldName} role="gridcell">
+                                        <c-table-cell object-name={objectName} field={field.fieldName} record={rec} type={field.type}></c-table-cell>
+                                    </td>
+                                </template>
+                                <td>
+                                    <div data-id={rec.Id} onclick={handleDelete} class="slds-truncate">
+                                        <lightning-button-icon icon-name="utility:delete" class="red-icon"  alternative-text="Delete" title="Delete"></lightning-button-icon>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                    <template lwc:else>
+                        <div class="slds-theme_shade">No Data to show</div>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        <div class="slds-m-top_medium">
+            <lightning-button variant="brand-outline" label="+ Add New Row" title="Add Row" class="my-brand" ></lightning-button>
+        </div>
+    </div>
+</template>
