@@ -19,13 +19,26 @@ export default class TableCell extends LightningElement {
      * The type of the field
      */
     @api type;
+    /**
+     * Mode could be edit or view
+     */
     @api mode;
+    /**
+     * Whatever the mode is if the field is not editatble then value cannot be changed
+     */
+    @api editable
+    /**
+     * Value of given field in the record
+     */
     value;
 
     connectedCallback() {
         this.value = this.record[this.field];
         if (!this.mode) {
             this.mode = 'view';
+        }
+        if (this.editable === undefined || this.editable === null) {
+            this.editable = 'true';
         }
     }
 
@@ -75,6 +88,9 @@ export default class TableCell extends LightningElement {
     }
 
     get isViewMode() {
+        if (String(this.editable).toLowerCase() === 'false') {
+            return true;
+        }
         if (this.isClosed) {
             return true;
         }

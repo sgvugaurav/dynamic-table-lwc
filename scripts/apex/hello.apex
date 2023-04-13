@@ -13,4 +13,4 @@ for (Integer i = 0; i < 5; i++) {
 }
 insert recordList;
 
-insert new Custom_Account__c(Name='Test Account 5', Rating__c='Hot', DateTime__c= DateTime.now(), Industry__c='Banking', Parent_Account__c='0010l00001YhuoQAAR');
+insert new Custom_Account__c(Name='Test Account 5', Rating__c='Hot', DateTime__c= DateTime.now(), Industry__c='Banking');

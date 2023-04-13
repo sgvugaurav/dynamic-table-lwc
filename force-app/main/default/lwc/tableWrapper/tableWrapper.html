@@ -32,8 +32,8 @@
                                     <span class="slds-row-number slds-text-body_small slds-text-color_weak"></span>
                                 </td>
                                 <template for:each={fields} for:item="field">
-                                    <td key={field.fieldName} role="gridcell">
-                                        <c-table-cell object-name={objectName} field={field.fieldName} record={rec} type={field.type} mode={mode}></c-table-cell>
+                                    <td key={field.fieldName} role="gridcell" onchange={handleCellValueChange} data-id={rec.Id} data-field={field.fieldName}>
+                                        <c-table-cell object-name={objectName} field={field.fieldName} record={rec} type={field.type} mode={mode} editable={field.editable}></c-table-cell>
                                     </td>
                                 </template>
                                 <td>

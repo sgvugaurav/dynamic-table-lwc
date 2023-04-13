@@ -17,7 +17,8 @@ export default class TableWrapper extends LightningElement {
     mode = 'view';
     localSequence = 1;
     saveDisabled = false;
-    dataChangeMap = new Map();
+    recordMap = new Map();
+    recordChangeSet = new Set();
 
     connectedCallback() {
         if (!this.label) {
@@ -46,6 +47,9 @@ export default class TableWrapper extends LightningElement {
             console.log(JSON.parse(JSON.stringify(data)));
             this.records = data;
             this.checkDate();
+            this.records.forEach(r => {
+                this.recordMap.set(r.Id, r);
+            });
         }).catch(error => {
             console.log(error);
             console.log(JSON.parse(JSON.stringify(error)));
@@ -73,12 +77,14 @@ export default class TableWrapper extends LightningElement {
             if (result) {
                 if (id.startsWith('local')) {
                     this.removeRecordWithId(id);
+                    this.recordMap.delete(id);
                 } else {
                     this.isLoading = true;
                     deleteRecord(id)
                     .then(res => {
                         console.log(res);
                         this.removeRecordWithId(id);
+                        this.recordMap.delete(id);
                         this.dispatchEvent(
                             new ShowToastEvent({
                                 title: 'Success',
@@ -116,6 +122,7 @@ export default class TableWrapper extends LightningElement {
             newRecord[field] = null;
         });
         this.records.push(newRecord);
+        this.recordMap.set(newRecord.Id, newRecord);
         console.log(newRecord);
     }
 
@@ -127,6 +134,11 @@ export default class TableWrapper extends LightningElement {
             this.mode = 'view';
             this.saveDisabled = true;
         }
+    }
+
+    handleCellValueChange(event) {
+        console.log('Id: ' + event.currentTarget.dataset.id + ' field: ' + event.currentTarget.dataset.field);
+        console.log(event.detail.value);
     }
 
     checkDate() {

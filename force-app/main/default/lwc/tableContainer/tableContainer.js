@@ -17,13 +17,13 @@ export default class TableContainer extends LightningElement {
         {'label': 'Pronounce','fieldName': 'Pronouns__c', 'type': 'picklist', 'editable':'true'}
     ];
     caseFields = [
-        {'label': 'Case Number','fieldName': 'Name', 'type': 'name', 'editable':'true'},
+        {'label': 'Case Number','fieldName': 'Name', 'type': 'name', 'editable':'false'},
         {'label': 'Datetime','fieldName': 'Datetime__c', 'type': 'datetime', 'editable':'true'},
         {'label': 'Description','fieldName': 'Description__c', 'type': 'text', 'editable':'true'},
         {'label': 'Status','fieldName': 'Status__c', 'type': 'picklist', 'editable':'true'}
     ];
     contractFields = [
-        {'label': 'Contract Number','fieldName': 'Name', 'type': 'name', 'editable':'true'},
+        {'label': 'Contract Number','fieldName': 'Name', 'type': 'name', 'editable':'false'},
         {'label': 'Activated Date','fieldName': 'Activated_Date__c', 'type': 'datetime', 'editable':'true'},
         {'label': 'Description','fieldName': 'Description__c', 'type': 'text', 'editable':'true'},
         {'label': 'Status','fieldName': 'Status__c', 'type': 'picklist', 'editable':'true'}
