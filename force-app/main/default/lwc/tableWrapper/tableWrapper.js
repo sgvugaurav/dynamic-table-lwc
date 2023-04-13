@@ -1,6 +1,9 @@
 import getData from '@salesforce/apex/DynamicTableController.getData';
 import { LightningElement, api, track } from 'lwc';
 import LightningAlert from 'lightning/alert';
+import LightningConfirm from 'lightning/confirm';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { deleteRecord } from 'lightning/uiRecordApi';
 
 export default class TableWrapper extends LightningElement {
     @api label;
@@ -53,9 +56,40 @@ export default class TableWrapper extends LightningElement {
     }
 
     handleDelete(event) {
-        console.log(event.detail);
-        console.log(event.target);
-        console.log(event.currentTarget.dataset);
+        const id = event.currentTarget.dataset.id;
+        LightningConfirm.open({
+            message: 'You are about to delete a record. Are you sure, you want to perform the action?',
+            theme: 'info'
+        })
+        .then(result => {
+            if (result) {
+                console.log(result);
+                deleteRecord(id)
+                .then(res => {
+                    console.log(res);
+                    this.removeRecordWithId(id);
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Success',
+                            message: 'Record deleted',
+                            variant: 'success'
+                        })
+                    );
+                }).catch(error => {
+                    console.log('Error deleting the record ', error);
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Error deleting record',
+                            message: error.body.message,
+                            variant: 'error'
+                        })
+                    );
+                });
+            }
+        })
+        .catch(error => {
+            console.log('Error while confirming delettion ', error);
+        });
     }
 
     checkDate() {
@@ -75,4 +109,11 @@ export default class TableWrapper extends LightningElement {
         });
     }
 
+    removeRecordWithId(Id) {
+        for(let i = 0;i < this.records.length;i++) {
+            if (this.records[i].Id === Id) {
+                this.records.splice(i, 1);
+            }
+        }
+    }
 }

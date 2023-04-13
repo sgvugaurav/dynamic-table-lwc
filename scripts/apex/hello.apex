@@ -12,3 +12,5 @@ for (Integer i = 0; i < 5; i++) {
     recordList.add(new Custom_Contract__c(Activated_Date__c=DateTime.now(), Description__c='This is contract discription',Status__c='Activated', Parent_Account__c='0010l00001YhuoQAAR'));
 }
 insert recordList;
+
+insert new Custom_Account__c(Name='Test Account 5', Rating__c='Hot', DateTime__c= DateTime.now(), Industry__c='Banking', Parent_Account__c='0010l00001YhuoQAAR');

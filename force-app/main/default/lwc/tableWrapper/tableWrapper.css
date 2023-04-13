@@ -37,6 +37,7 @@ table thead tr th:last-child {
 
 .my-brand {
     --sds-c-button-outline-brand-color-border: red;
+    --slds-c-button-outline-brand-color-border-hover: red;
     --slds-c-button-shadow: red;
     --slds-c-button-shadow-focus: red;
     --slds-c-button-text-color: red;
