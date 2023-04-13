@@ -5,6 +5,7 @@ export default class PicklistCombobox extends LightningElement {
     @api objectName;
     @api picklistField;
     @api value;
+    @api disabled;
     typeId;
     field;
     options;

@@ -14,6 +14,10 @@ export default class TableWrapper extends LightningElement {
     @track fieldList;
     isLoading = false;
     dateFieldInfo = {};
+    mode = 'view';
+    localSequence = 1;
+    saveDisabled = false;
+    dataChangeMap = new Map();
 
     connectedCallback() {
         if (!this.label) {
@@ -56,40 +60,73 @@ export default class TableWrapper extends LightningElement {
     }
 
     handleDelete(event) {
+        if (this.isDisabled) {
+            return;
+        }
         const id = event.currentTarget.dataset.id;
         LightningConfirm.open({
             message: 'You are about to delete a record. Are you sure, you want to perform the action?',
             theme: 'info'
         })
         .then(result => {
+            console.log(result);
             if (result) {
-                console.log(result);
-                deleteRecord(id)
-                .then(res => {
-                    console.log(res);
+                if (id.startsWith('local')) {
                     this.removeRecordWithId(id);
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Success',
-                            message: 'Record deleted',
-                            variant: 'success'
-                        })
-                    );
-                }).catch(error => {
-                    console.log('Error deleting the record ', error);
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Error deleting record',
-                            message: error.body.message,
-                            variant: 'error'
-                        })
-                    );
-                });
+                } else {
+                    this.isLoading = true;
+                    deleteRecord(id)
+                    .then(res => {
+                        console.log(res);
+                        this.removeRecordWithId(id);
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Success',
+                                message: 'Record deleted',
+                                variant: 'success'
+                            })
+                        );
+                    })
+                    .catch(error => {
+                        console.log('Error deleting the record ', error);
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Error deleting record',
+                                message: error.body.message,
+                                variant: 'error'
+                            })
+                        );
+                    })
+                    .finally(() => {
+                        this.isLoading = false;
+                    });
+                }
             }
         })
         .catch(error => {
             console.log('Error while confirming delettion ', error);
         });
+    }
+
+    handleAddRow(event) {
+        const newRecord = {};
+        newRecord.Id = 'local' + this.localSequence;
+        this.localSequence += 1;
+        this.fieldList.forEach(field => {
+            newRecord[field] = null;
+        });
+        this.records.push(newRecord);
+        console.log(newRecord);
+    }
+
+    handelEditAndSave(event) {
+        if (this.mode != 'edit') {
+            this.mode = 'edit';
+        }
+        else {
+            this.mode = 'view';
+            this.saveDisabled = true;
+        }
     }
 
     checkDate() {
@@ -114,6 +151,18 @@ export default class TableWrapper extends LightningElement {
             if (this.records[i].Id === Id) {
                 this.records.splice(i, 1);
             }
+        }
+    }
+
+    get isDisabled() {
+        return this.mode !== 'edit';
+    }
+
+    get btnLabel() {
+        if (this.mode != 'edit') {
+            return 'Edit';
+        } else {
+            return 'Save';
         }
     }
 }

@@ -35,6 +35,12 @@ table thead tr th:last-child {
     border: 2px solid red;
 }
 
+.btn-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .my-brand {
     --sds-c-button-outline-brand-color-border: red;
     --slds-c-button-outline-brand-color-border-hover: red;

@@ -1,4 +1,7 @@
 <template>
+    <template lwc:if={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="small" label="Loading Spinner" variant="brand" class="my-brand"></lightning-spinner>
+    </template>
     <div class="slds-box slds-theme_shade">
         <div class="table-container slds-p-top_x-small slds-p-left_x-small slds-p-right_x-small slds-p-bottom_x-small">
             <div>
@@ -30,7 +33,7 @@
                                 </td>
                                 <template for:each={fields} for:item="field">
                                     <td key={field.fieldName} role="gridcell">
-                                        <c-table-cell object-name={objectName} field={field.fieldName} record={rec} type={field.type}></c-table-cell>
+                                        <c-table-cell object-name={objectName} field={field.fieldName} record={rec} type={field.type} mode={mode}></c-table-cell>
                                     </td>
                                 </template>
                                 <td>
@@ -48,7 +51,12 @@
             </table>
         </div>
         <div class="slds-m-top_medium">
-            <lightning-button variant="brand-outline" label="+ Add New Row" title="Add Row" class="my-brand" ></lightning-button>
+            <lightning-button variant="brand-outline" label="+ Add New Row" title="Add Row" class="my-brand" onclick={handleAddRow} disabled={isDisabled} ></lightning-button>
+        </div>
+        <div class="slds-var-m-top_large slds-border_top btn-center">
+            <div>
+                <lightning-button label={btnLabel} onclick={handelEditAndSave} class="my-brand" disabled={saveDisabled} ></lightning-button>
+            </div>
         </div>
     </div>
 </template>
