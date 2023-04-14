@@ -65,10 +65,15 @@ public with sharing class DynamicTableController_Test {
             'DateTime__c' => dt
         });
         Test.startTest();
-            DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
+            try {
+                DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
+            }
+            catch (Exception ex) {
+                System.assertEquals(true, ex.getMessage().contains('Script-thrown'), 'Error message must contain Script-Thrown Error');
+            }
         Test.stopTest();
         List<Custom_Account__c> c = [SELECT Id FROM Custom_Account__c];
-        System.assertEquals(201, c.size(), 'There should be 1 record in the Custom_Account__c SObject');
+        System.assertEquals(200, c.size(), 'There should be 1 record in the Custom_Account__c SObject');
     }
 
     @isTest
@@ -86,12 +91,68 @@ public with sharing class DynamicTableController_Test {
             'DateTime__c' => dateString
         });
         Test.startTest();
-            try {
-                DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
-            }
-            catch (Exception ex) {
-                System.assertEquals(true, ex.getMessage().contains('Script-thrown'), 'Error message must contain Script-Thrown Error');
-            }
+            DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
         Test.stopTest();
+        List<Custom_Account__c> allAccounts = [SELECT Id FROM Custom_Account__c];
+        System.assertEquals(201, allAccounts.size(), 'The total number of records must be 201');
+    }
+
+    @isTest
+    private static void testSaveDataForUpdatingRecord() {
+        List<Map<String, Object>> recordList = new List<Map<String, Object>>();
+        Map<String, String> fieldTypes = new Map<String, String>{
+            'Name' => 'String',
+            'Rating__c' => 'String',
+            'DateTime__c' => 'datetime'
+        };
+        List<Custom_Account__c> accList = [SELECT Id, Name, Rating__c, DateTime__c, Industry__c FROM Custom_Account__c WHERE Name = 'Test Account 1'];
+        accList[0].Name = 'Updated Account Name';
+        recordList.add(new Map<String, Object> {
+            'Id' => accList[0].Id,
+            'Name' => accList[0].Name,
+            'Rating__c' => accList[0].Rating__c,
+            'DateTime__c' => '2023-04-14T04:53:00.000Z'
+        });
+        Test.startTest();
+            List<SObject> createdRecords = DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
+        Test.stopTest();
+        System.assertEquals(0, createdRecords.size(), 'The length of createdRecords should be 0 as records has been updated instead of creating');
+        List<Custom_Account__c> aList = [SELECT Id, Name, Rating__c, DateTime__c, Industry__c FROM Custom_Account__c WHERE Name = 'Updated Account Name'];
+        List<Custom_Account__c> allAccounts = [SELECT Id FROM Custom_Account__c];
+        System.assert(aList.size() == accList.size(), 'Size must be equal');
+        System.assert(aList[0].Id == accList[0].Id, 'The Id must match');
+        System.assertEquals(200, allAccounts.size(), 'There must be a total of 200 records.');
+    }
+
+    @IsTest
+    static void testSaveDataForInsertAndUpdateTogether(){
+        List<Map<String, Object>> recordList = new List<Map<String, Object>>();
+        Map<String, String> fieldTypes = new Map<String, String>{
+            'Name' => 'String',
+            'Rating__c' => 'String',
+            'DateTime__c' => 'datetime'
+        };
+        List<Custom_Account__c> accList = [SELECT Id, Name, Rating__c, DateTime__c, Industry__c FROM Custom_Account__c WHERE Name = 'Test Account 1'];
+        accList[0].Name = 'Updated Account Name';
+        recordList.add(new Map<String, Object> {
+            'Id' => accList[0].Id,
+            'Name' => accList[0].Name,
+            'Rating__c' => accList[0].Rating__c,
+            'DateTime__c' => '2023-04-14T04:53:00.000Z'
+        });
+        String dateString = '2023-04-14T04:53:00.000Z';
+        recordList.add(new Map<String, Object>{
+            'Name' => 'Test Account',
+            'Rating__c' => 'Hot',
+            'DateTime__c' => dateString
+        });
+        Test.startTest();
+            DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
+        Test.stopTest();
+        List<Custom_Account__c> aList = [SELECT Id, Name, Rating__c, DateTime__c, Industry__c FROM Custom_Account__c WHERE Name = 'Updated Account Name'];
+        List<Custom_Account__c> allAccounts = [SELECT Id FROM Custom_Account__c];
+        System.assert(aList.size() == accList.size(), 'Size must be equal');
+        System.assert(aList[0].Id == accList[0].Id, 'The Id must match');
+        System.assertEquals(201, allAccounts.size(), 'The total number of records must be 201');
     }
 }
