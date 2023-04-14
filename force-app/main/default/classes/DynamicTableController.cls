@@ -36,28 +36,58 @@ public with sharing class DynamicTableController {
      * @return           `List<SObject>`
      */
     @AuraEnabled
-    public static List<SObject> saveData(String objectName, List<Map<String, String>> records) {
-        List<SObject> objList = new List<SObject>();
+    public static List<SObject> saveData(String objectName, List<Map<String, Object>> records, Map<String, String> fieldTypes) {
         try {
-            if (!String.isBlank(objectName) && records != null) {
+            List<SObject> objList = new List<SObject>();
+            Database.UpsertResult[] result;
+            if (!String.isBlank(objectName) && records != null && fieldTypes != null) {
                 Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-                for (Map<String, String> record : records) {
+                for (Map<String, Object> record : records) {
                     SObject obj = globalDescribe.get(objectName).newSObject();
                     for (String field : record.keySet()) {
-                        obj.put(field, record.get(field));
+                        if (record.get(field) != null) {
+                            if ('datetime'.equalsIgnoreCase(fieldTypes.get(field)?.toLowerCase())) {
+                                Datetime dt = Datetime.valueOf(((String) record.get(field)).replace('T', ' ').substringBefore('.').replace('Z', ''));
+                                obj.put(field, dt);
+                            }
+                            else if ('date'.equalsIgnoreCase(fieldTypes.get(field)?.toLowerCase())) {
+                                Date d = Date.valueOf((String) record.get(field));
+                                obj.put(field, d);
+                            }
+                            else {
+                                obj.put(field, (String)record.get(field));
+                            }
+                        }
                     }
                     objList.add(obj);
                 }
 
                 Schema.DescribeSObjectResult describeResult = globalDescribe.get(objectName).getDescribe();
                 if (describeResult.isUpdateable() && describeResult.isCreateable()) {
-                    Database.upsert(objList);
+                    result =  Database.upsert(objList);
                 }
             }
+            return getCreatedRecords(result, objectName, new List<String>(fieldTypes.keySet()));
         }
         catch (Exception ex) {
             throw new AuraHandledException('Object API Name or One of the merge field name is incorrect. Make sure that the SObject and its fields exists.');
         }
-        return objList;
+    }
+
+    @TestVisible
+    private static List<SObject> getCreatedRecords(List<Database.UpsertResult> result, String objectName, List<String> fields) {
+        try {
+            Set<Id> createdRecordIds = new Set<Id>();
+            for (Database.UpsertResult r : result) {
+                if (r.isCreated()) {
+                    createdRecordIds.add(r.getId());
+                }
+            }
+            String query = String.escapeSingleQuotes('SELECT ' + String.join(fields, ',') + ',Parent_Account__r.Status__c FROM ' + objectName + ' WHERE ID IN :createdRecordIds');
+            return Database.query(query);
+        }
+        catch (Exception ex) {
+            throw new AuraHandledException('Error fetching created records');
+        }
     }
 }

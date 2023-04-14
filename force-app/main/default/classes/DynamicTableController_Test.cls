@@ -48,4 +48,50 @@ public with sharing class DynamicTableController_Test {
             }
         Test.stopTest();
     }
+
+    @isTest
+    private static void testSaveData() {
+        List<Map<String, Object>> recordList = new List<Map<String, Object>>();
+        String dateString = '2023-04-14T04:53:00.000Z';
+        Datetime dt = Datetime.valueOf(dateString.replace('T', ' ').substringBefore('.').replace('Z', ''));
+        Map<String, String> fieldTypes = new Map<String, String>{
+            'Name' => 'String',
+            'Rating__c' => 'String',
+            'DateTime__c' => 'datetime'
+        };
+        recordList.add(new Map<String, Object>{
+            'Name' => 'Test Account',
+            'Rating__c' => 'Hot',
+            'DateTime__c' => dt
+        });
+        Test.startTest();
+            DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
+        Test.stopTest();
+        List<Custom_Account__c> c = [SELECT Id FROM Custom_Account__c];
+        System.assertEquals(201, c.size(), 'There should be 1 record in the Custom_Account__c SObject');
+    }
+
+    @isTest
+    private static void testSaveDataForError() {
+        List<Map<String, Object>> recordList = new List<Map<String, Object>>();
+        Map<String, String> fieldTypes = new Map<String, String>{
+            'Name' => 'String',
+            'Rating__c' => 'String',
+            'DateTime__c' => 'datetime'
+        };
+        String dateString = '2023-04-14T04:53:00.000Z';
+        recordList.add(new Map<String, Object>{
+            'Name' => 'Test Account',
+            'Rating__c' => 'Hot',
+            'DateTime__c' => dateString
+        });
+        Test.startTest();
+            try {
+                DynamicTableController.saveData('Custom_Account__c', recordList, fieldTypes);
+            }
+            catch (Exception ex) {
+                System.assertEquals(true, ex.getMessage().contains('Script-thrown'), 'Error message must contain Script-Thrown Error');
+            }
+        Test.stopTest();
+    }
 }
