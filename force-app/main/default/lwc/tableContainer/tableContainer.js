@@ -6,13 +6,13 @@ export default class TableContainer extends LightningElement {
     customCase = 'Custom_Case__c';
     customContract = 'Custom_Contract__c';
     accountFields = [
-        {'label': 'Account Name','fieldName': 'Name', 'type': 'name', 'editable':'true'},
+        {'label': 'Account Name','fieldName': 'Name', 'type': 'name', 'editable':'true', 'required': 'true'},
         {'label': 'Rating','fieldName': 'Rating__c', 'type': 'picklist', 'editable':'true'},
         {'label': 'DateTime','fieldName': 'DateTime__c', 'type': 'datetime', 'editable':'true'},
         {'label': 'Industry','fieldName': 'Industry__c', 'type': 'picklist', 'editable':'true'}
     ];
     contactFields = [
-        {'label': 'Contact Name','fieldName': 'Name', 'type': 'name', 'editable':'true'},
+        {'label': 'Contact Name','fieldName': 'Name', 'type': 'name', 'editable':'true', 'required': 'true'},
         {'label': 'Date','fieldName': 'Date__c', 'type': 'date', 'editable':'true'},
         {'label': 'Pronounce','fieldName': 'Pronouns__c', 'type': 'picklist', 'editable':'true'}
     ];

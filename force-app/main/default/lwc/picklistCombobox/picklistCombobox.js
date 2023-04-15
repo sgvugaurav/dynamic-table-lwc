@@ -6,6 +6,7 @@ export default class PicklistCombobox extends LightningElement {
     @api picklistField;
     @api value;
     @api disabled;
+    @api required;
     typeId;
     field;
     options;
@@ -35,5 +36,9 @@ export default class PicklistCombobox extends LightningElement {
             console.log('Error while fetching picklist values');
             console.log(error);
         }
+    }
+
+    get isRequired() {
+        return String(this.required).toLocaleLowerCase() === 'true';
     }
 }

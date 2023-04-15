@@ -4,7 +4,7 @@
             <div class="slds-truncate" title={value}>{value}</div>
         </template>
         <template lwc:else>
-            <lightning-input type="text" value={value} ></lightning-input>
+            <lightning-input type="text" value={value} required={isRequired} ></lightning-input>
         </template>
     </template>
     <template lwc:elseif={isName}>
@@ -14,7 +14,7 @@
             </div>
         </template>
         <template lwc:else>
-            <lightning-input type="text" value={value}></lightning-input>
+            <lightning-input type="text" value={value} required={isRequired} ></lightning-input>
         </template>
     </template>
     <template lwc:elseif={isPicklist}>
@@ -23,13 +23,14 @@
         picklist-field={field}
         value={value}
         disabled={isViewMode}
+        required={isRequired}
         ></c-picklist-combobox>
     </template>
     <template lwc:elseif={isDateTime}> 
-        <lightning-input type="datetime" class="red-icon" name="datetimevalue" label="" value={value} disabled={isViewMode} ></lightning-input>
+        <lightning-input type="datetime" class="red-icon" name="datetimevalue" label="" value={value} disabled={isViewMode} required={isRequired} ></lightning-input>
     </template>
     <template lwc:elseif={isDate}>
-        <lightning-input type="date" class="red-icon" name="datevalue" label="" value={value} disabled={isViewMode} ></lightning-input>
+        <lightning-input type="date" class="red-icon" name="datevalue" label="" value={value} disabled={isViewMode} required={isRequired} ></lightning-input>
     </template>
     <template lwc:elseif={isEmail}>
         <template lwc:if={isViewMode}>
@@ -38,7 +39,7 @@
             </div>
         </template>
         <template lwc:else>
-            <lightning-input type="email" value={value}></lightning-input>
+            <lightning-input type="email" value={value} required={isRequired}></lightning-input>
         </template>
     </template>
     <template lwc:else>

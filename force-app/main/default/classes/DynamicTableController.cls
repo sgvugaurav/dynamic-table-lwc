@@ -1,6 +1,6 @@
 /**
  * Controller class for TableContainer and TableWrapper LWC components
- * Test Class - DynamicTableController_Test
+ * @TestClass - DynamicTableController_Test
  * @author Gaurav Kumar
  * @since  11 April 2023
  */
@@ -45,6 +45,9 @@ public with sharing class DynamicTableController {
                 for (Map<String, Object> record : records) {
                     SObject obj = globalDescribe.get(objectName).newSObject();
                     for (String field : record.keySet()) {
+                        if (field.endsWith('__r')) {
+                            continue;
+                        }
                         if (record.get(field) != null) {
                             if ('datetime'.equalsIgnoreCase(fieldTypes.get(field)?.toLowerCase())) {
                                 Datetime dt = Datetime.valueOf(((String) record.get(field)).replace('T', ' ').substringBefore('.').replace('Z', ''));

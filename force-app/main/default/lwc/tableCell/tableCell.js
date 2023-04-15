@@ -26,7 +26,11 @@ export default class TableCell extends LightningElement {
     /**
      * Whatever the mode is if the field is not editatble then value cannot be changed
      */
-    @api editable
+    @api editable;
+    /**
+     * Decides whether the field is required or not
+     */
+    @api required;
     /**
      * Value of given field in the record
      */
@@ -39,6 +43,9 @@ export default class TableCell extends LightningElement {
         }
         if (this.editable === undefined || this.editable === null) {
             this.editable = 'true';
+        }
+        if (this.required == undefined || this.required == null) {
+            this.required = false;
         }
     }
 
@@ -95,5 +102,9 @@ export default class TableCell extends LightningElement {
             return true;
         }
         return this.mode != 'edit';
+    }
+
+    get isRequired() {
+        return String(this.required).toLowerCase() === 'true';
     }
 }
