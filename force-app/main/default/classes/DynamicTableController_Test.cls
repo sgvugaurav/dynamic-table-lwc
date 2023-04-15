@@ -155,4 +155,31 @@ public with sharing class DynamicTableController_Test {
         System.assert(aList[0].Id == accList[0].Id, 'The Id must match');
         System.assertEquals(201, allAccounts.size(), 'The total number of records must be 201');
     }
+
+    @isTest
+    private static void testSaveDataForSObjectWithAutonumberField() {
+        List<Map<String, Object>> recordList = new List<Map<String, Object>>();
+        Map<String, String> fieldTypes = new Map<String, String>{
+            'Name' => 'String',
+            'Description__c' => 'String',
+            'Datetime__c' => 'datetime'
+        };
+        List<Custom_Case__c> accList = [SELECT Id, Name,Datetime__c, Description__c FROM Custom_Case__c ORDER BY Id];
+        String description =accList[0].Description__c;
+        recordList.add(new Map<String, Object> {
+            'Id' => accList[0].Id,
+            'Datetime__c' => '2023-04-15T04:53:00.000Z',
+            'Description__c' => 'Description in test class'
+        });
+        Test.startTest();
+            try {
+                DynamicTableController.saveData('Custom_Case__c', recordList, fieldTypes);
+            } catch (Exception e) {
+                List<Custom_Case__c> cases = [SELECT Id, Name,Datetime__c, Description__c FROM Custom_Case__c ORDER BY Id];
+                System.assertEquals(description, cases[0].Description__c, 'Error occured while saving the record');
+            }
+        Test.stopTest();
+        List<Custom_Case__c> caseList = [SELECT Id, Name,Datetime__c, Description__c FROM Custom_Case__c ORDER BY Id];
+        System.assertEquals('Description in test class', caseList[0].Description__c, 'Description must have been updated');
+    }
 }

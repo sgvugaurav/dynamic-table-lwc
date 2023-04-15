@@ -197,6 +197,11 @@ export default class TableWrapper extends LightningElement {
                 }
                 delete record.isToday;
                 delete record.styleClasses;
+                this.fields.forEach(f => {
+                    if (String(f['editable']) === 'false') {
+                        delete record[f.fieldName];
+                    }
+                });
             });
             console.log('Records to be saved >> ', recordsToSave);
             const fieldTypes = {};
@@ -213,21 +218,6 @@ export default class TableWrapper extends LightningElement {
             .then(data => {
                 console.log('New Data >> ', data);
                 console.log('Existing records >> ', JSON.parse(JSON.stringify(this.records)));
-                // const newRecordList = [];
-                // this.records.forEach(r => {
-                //     if (r.Id != undefined && r.Id != null && !String(r.Id).startsWith('local')) {
-                //         newRecordList.push(r);
-                //     }
-                // });
-                // data.forEach(d => {
-                //     newRecordList.push(d);
-                // });
-                // console.log('New Record List >> ', newRecordList);
-                // this.recordMap.clear();
-                // this.recordChangeSet.clear();
-                // this.changeList = [];
-                // this.records = null;
-                // this.records = newRecordList;
                 this.records.forEach(r => {
                     if (String(r.Id).startsWith('local')) {
                         console.log('Record found with id >> ', r.Id);
@@ -235,9 +225,6 @@ export default class TableWrapper extends LightningElement {
                         console.log('Updated list >> ', this.records);
                     }
                 });
-                console.log('Records  ');
-                // this.records = [...this.records, ...data];
-                // this.clearRecordsWithNoId();
                 this.records = [...this.records, ...data];
                 this.changeList = [];
                 console.log('Record List after update >> ', this.records);
