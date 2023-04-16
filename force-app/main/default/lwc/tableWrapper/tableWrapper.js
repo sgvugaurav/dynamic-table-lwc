@@ -69,9 +69,7 @@ export default class TableWrapper extends LightningElement {
         .then(result => {
             if (result) {
                 if (id.startsWith('local')) {
-                    console.log('Records lenght before removing => ',this.records.length);
                     this.removeRecordWithId(id, this.records);
-                    console.log('Records lenght after removing => ',this.records.length);
                     this.removeRecordWithId(id, this.changeList);
                     this.dispatchEvent(
                         new ShowToastEvent({
@@ -141,7 +139,7 @@ export default class TableWrapper extends LightningElement {
         const type = event.currentTarget.dataset.type;
         const record = this.getRecordWithId(Id, this.records);
         console.log('UnChanged Records List',JSON.parse(JSON.stringify(this.records)));
-        record[field] = value;
+        record[field] = String(value);
         console.log('Changed Records List',JSON.parse(JSON.stringify(this.records)));
         console.log('Cell Value: ', value);
         console.log('Record Id: ', Id);
@@ -169,11 +167,11 @@ export default class TableWrapper extends LightningElement {
         const label = event.target.label;
         if (label === 'Edit' && this.mode != 'edit') {
             this.mode = 'edit';
-        }
+        } // else {
+        //     this.records = [...this.records];
+        //     this.mode = 'view';
+        // }
         else {
-            // console.log('Record Set while save >> ', JSON.parse(JSON.stringify(this.recordChangeSet)));
-            // const recordList = [...this.recordChangeSet];
-            // console.log('List representation of recordSet ', JSON.parse(JSON.stringify(recordList)));
             /**
              * Check is any required field's value is missing
              */
@@ -188,7 +186,7 @@ export default class TableWrapper extends LightningElement {
                 return;
             }
             /**
-             * Deletes the custom added fields from the record
+             * Deletes the custom added fields and fields that are not editable from the record
              */
             const recordsToSave = structuredClone(this.changeList);
             recordsToSave.forEach(record => {
@@ -203,12 +201,10 @@ export default class TableWrapper extends LightningElement {
                     }
                 });
             });
-            console.log('Records to be saved >> ', recordsToSave);
             const fieldTypes = {};
             this.fields.forEach(f => {
                 fieldTypes[f.fieldName] = f.type;
             });
-            console.log('Field Types ', fieldTypes);
             this.isLoading = true;
             saveData({
                 objectName: this.objectName,
@@ -216,8 +212,6 @@ export default class TableWrapper extends LightningElement {
                 fieldTypes: fieldTypes
             })
             .then(data => {
-                console.log('New Data >> ', data);
-                console.log('Existing records >> ', JSON.parse(JSON.stringify(this.records)));
                 this.records.forEach(r => {
                     if (String(r.Id).startsWith('local')) {
                         console.log('Record found with id >> ', r.Id);
@@ -227,8 +221,6 @@ export default class TableWrapper extends LightningElement {
                 });
                 this.records = [...this.records, ...data];
                 this.changeList = [];
-                console.log('Record List after update >> ', this.records);
-                console.log('Record size after update >> ', this.records.length);
                 this.checkDate();
                 this.mode = 'view';
                 this.saveDisabled = true;
@@ -250,13 +242,12 @@ export default class TableWrapper extends LightningElement {
                         variant: 'error'
                     })
                 );
-                console.log(this.records);
             })
             .finally(() => {
                 this.isLoading = false;
-                console.log(this.records);
             });
         }
+        
     }
 
     checkDate() {
@@ -276,28 +267,10 @@ export default class TableWrapper extends LightningElement {
         });
     }
 
-    // removeRecordWithId(Id) {
-    //     for(let i = 0;i < this.records.length;i++) {
-    //         if (this.records[i].Id === Id) {
-    //             this.records.splice(i, 1);
-    //         }
-    //     }
-    // }
-
     removeRecordWithId(Id, arr) {
         for(let i = 0;i < arr.length;i++) {
             if (arr[i].Id === Id) {
                 arr.splice(i, 1);
-            }
-        }
-    }
-
-    clearRecordsWithNoId() {
-        for (let i = 0; i < this.records.length; i++) {
-            const element = this.records[i];
-            if (element.Id == undefined || element.Id == null) {
-                this.records.splice(i, 1);
-                i--;
             }
         }
     }
@@ -314,12 +287,8 @@ export default class TableWrapper extends LightningElement {
 
     isDataValid() {
         for (const record of this.changeList) {
-            console.log(JSON.parse(JSON.stringify(record)));
-            console.log(JSON.parse(JSON.stringify(this.fields)));
             for (const field of this.fields) {
-                console.log(field);
                 if ((record[field.fieldName] === undefined || record[field.fieldName] === null || record[field.fieldName] === '') && String(field.required).toLowerCase() === 'true') {
-                    console.log('Invalid data');
                     return false;
                 }
             }
