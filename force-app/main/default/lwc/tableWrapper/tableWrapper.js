@@ -46,7 +46,6 @@ export default class TableWrapper extends LightningElement {
             this.checkDate();
         }).catch(error => {
             console.log(error);
-            console.log(JSON.parse(JSON.stringify(error)));
             LightningAlert.open({
                 message: error.body.message,
                 theme: 'error', 
@@ -82,7 +81,6 @@ export default class TableWrapper extends LightningElement {
                     this.isLoading = true;
                     deleteRecord(id)
                     .then(res => {
-                        console.log(res);
                         this.removeRecordWithId(id, this.records);
                         this.removeRecordWithId(id, this.changeList);
                         this.dispatchEvent(
@@ -115,8 +113,6 @@ export default class TableWrapper extends LightningElement {
     }
 
     handleAddRow(event) {
-        // console.log('Records lengh before adding row >> ', this.records.length);
-        // console.log('ChangeList lenght before adding row >> ', this.changeList.length);
         const newRecord = {};
         newRecord.Id = this.localIdPrefix + this.localSequence;
         this.fields.forEach(field => {
@@ -127,9 +123,6 @@ export default class TableWrapper extends LightningElement {
         this.records.push(newRecord);
         this.changeList.push(newRecord);
         this.localSequence += 1;
-        // console.log(newRecord);
-        // console.log('Records lengh after adding row >> ', this.records.length);
-        // console.log('ChangeList lenght after adding row >> ', this.changeList.length);
     }
 
     handleCellValueChange(event) {
@@ -138,13 +131,7 @@ export default class TableWrapper extends LightningElement {
         const field = event.currentTarget.dataset.field;
         const type = event.currentTarget.dataset.type;
         const record = this.getRecordWithId(Id, this.records);
-        console.log('UnChanged Records List',JSON.parse(JSON.stringify(this.records)));
         record[field] = String(value);
-        console.log('Changed Records List',JSON.parse(JSON.stringify(this.records)));
-        console.log('Cell Value: ', value);
-        console.log('Record Id: ', Id);
-        console.log('Changed Field: ', field);
-        console.log('Field Type: ', type);
         if(this.dateFieldInfo.hasDateField && (type === 'date' || type === 'datetime')) {
             const today = new Date();
             const date = new Date(value);
@@ -159,18 +146,13 @@ export default class TableWrapper extends LightningElement {
         if (this.getRecordWithId(Id, this.changeList) === null) {
             this.changeList.push(record);
         }
-        console.log('Size of changeList after cell value change', this.changeList.length);
-        console.log('Changed Record List',this.changeList);
     }
 
     handelEditAndSave(event) {
         const label = event.target.label;
         if (label === 'Edit' && this.mode != 'edit') {
             this.mode = 'edit';
-        } // else {
-        //     this.records = [...this.records];
-        //     this.mode = 'view';
-        // }
+        }
         else {
             /**
              * Check is any required field's value is missing
@@ -214,9 +196,7 @@ export default class TableWrapper extends LightningElement {
             .then(data => {
                 this.records.forEach(r => {
                     if (String(r.Id).startsWith('local')) {
-                        console.log('Record found with id >> ', r.Id);
                         this.removeRecordWithId(r.Id, this.records);
-                        console.log('Updated list >> ', this.records);
                     }
                 });
                 this.records = [...this.records, ...data];

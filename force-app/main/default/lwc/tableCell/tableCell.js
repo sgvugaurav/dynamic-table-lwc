@@ -49,6 +49,10 @@ export default class TableCell extends LightningElement {
         }
     }
 
+    renderedCallback() {
+        this.value = this.record[this.field];
+    }
+
     get isText() {
         return this.type.toLowerCase() === 'text';
     }

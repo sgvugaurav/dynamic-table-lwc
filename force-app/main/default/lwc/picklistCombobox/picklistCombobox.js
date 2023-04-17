@@ -15,8 +15,6 @@ export default class PicklistCombobox extends LightningElement {
     wiredObjectInfo({data, error}) {
         if(data) {
             this.typeId = data.defaultRecordTypeId;
-            console.log(this.objectName);
-            console.log(this.picklistField);
             this.field = {
                 "fieldApiName": this.picklistField,
                 "objectApiName": this.objectName
