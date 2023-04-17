@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+		<members>Account</members>
+        <members>Custom_Account__c</members>
+        <members>Custom_Case__c</members>
+        <members>Custom_Contact__c</members>
+        <members>Custom_Contract__c</members>
+        <name>CustomObject</name>
+    </types>
+	<types>
+		<members>DynamicTableController</members>
+		<members>DynamicTableController_Test</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>*</members>
+		<name>LightningComponentBundle</name>
+	</types>
+	<version>57.0</version>
+</Package>

@@ -188,18 +188,26 @@ export default class TableWrapper extends LightningElement {
                 fieldTypes[f.fieldName] = f.type;
             });
             this.isLoading = true;
+            console.log("Following records to be saved >> ", JSON.parse(JSON.stringify(recordsToSave)));
             saveData({
                 objectName: this.objectName,
                 records: recordsToSave,
                 fieldTypes: fieldTypes
             })
             .then(data => {
+                // this.records.forEach(r => {
+                //     if (String(r.Id).startsWith(localIdPrefix)) {
+                //         this.removeRecordWithId(r.Id, this.records);
+                //     }
+                // });
+                const newRecordList = [];
                 this.records.forEach(r => {
-                    if (String(r.Id).startsWith('local')) {
-                        this.removeRecordWithId(r.Id, this.records);
+                    if (!String(r.Id).startsWith(this.localIdPrefix)) {
+                        newRecordList.push(r);
                     }
                 });
-                this.records = [...this.records, ...data];
+                console.log("New record list >> ", newRecordList);
+                this.records = [...newRecordList, ...data];
                 this.changeList = [];
                 this.checkDate();
                 this.mode = 'view';
