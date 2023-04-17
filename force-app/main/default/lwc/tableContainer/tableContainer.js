@@ -28,4 +28,38 @@ export default class TableContainer extends LightningElement {
         {'label': 'Description','fieldName': 'Description__c', 'type': 'text', 'editable':'true'},
         {'label': 'Status','fieldName': 'Status__c', 'type': 'picklist', 'editable':'true'}
     ];
+    mode = "view";
+    isLoading = false;
+
+    handleOnclick(event) {
+        const label = event.target.label;
+        this.mode = label === "Edit"? "edit": "view";
+        if (label === "Save") {
+            const accountTable = this.refs.accountTable;
+            const contactTable = this.refs.contactTable;
+            const caseTable = this.refs.caseTable;
+            const contractTable = this.refs.contractTable;
+            // accountTable.handleEditAndSave(event);
+            // contactTable.handleEditAndSave(event);
+            // caseTable.handleEditAndSave(event);
+            // contractTable.handleEditAndSave(event);
+            this.isLoading = true;
+            Promise.all([
+                accountTable.handleEditAndSave(event),
+                contactTable.handleEditAndSave(event),
+                caseTable.handleEditAndSave(event),
+                contractTable.handleEditAndSave(event)
+            ]).then(data => {
+                console.log(data);
+            }).catch(error => {
+                console.log(error);
+            }).finally(() => {
+                this.isLoading = false;
+            });
+        }
+    }
+
+    get btnLabel() {
+        return String(this.mode).toLocaleLowerCase() === "edit"? "Save": "Edit";
+    }
 }

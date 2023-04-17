@@ -1,32 +1,54 @@
 <template>
+    <template lwc:if={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="small" label="Loading Spinner" variant="brand" class="my-brand"></lightning-spinner>
+    </template>
     <div class="main slds-box slds-theme_default">
+    <div class="slds-var-m-bottom_large slds-border_bottom btn-center">
+        <div>
+            <lightning-button label={btnLabel} onclick={handleOnclick} class="my-brand"></lightning-button>
+        </div>
+    </div>
         <div class="slds-m-bottom_x-large">
-            <c-table-wrapper
+        <c-table-wrapper
+                lwc:ref="accountTable"
                 label="Account Table"
                 object-name={customAccount}
                 fields={accountFields}
+                mode={mode}
                 ></c-table-wrapper>
         </div>
        <div class="slds-m-bottom_x-large">
             <c-table-wrapper
+                lwc:ref="contactTable"
                 label="Contact Table"
                 object-name={customContact}
                 fields={contactFields}
+                mode={mode}
                 ></c-table-wrapper>
        </div>
        <div class="slds-m-bottom_x-large">
             <c-table-wrapper
+                lwc:ref="caseTable"
                 label="Case Table"
                 object-name={customCase}
                 fields={caseFields}
+                mode={mode}
                 ></c-table-wrapper>
        </div>
        <div class="slds-m-bottom_x-large">
             <c-table-wrapper
+                lwc:ref="contractTable"
                 label="Contract Table"
                 object-name={customContract}
                 fields={contractFields}
+                mode={mode}
                 ></c-table-wrapper>
        </div>
+       
+       <div class="slds-var-m-top_large slds-border_top btn-center">
+           <div>
+               <lightning-button label={btnLabel} onclick={handleOnclick} class="my-brand"></lightning-button>
+            </div>
+        </div>
     </div>
 </template>

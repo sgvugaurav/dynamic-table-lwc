@@ -10,12 +10,12 @@ export default class TableWrapper extends LightningElement {
     @api label;
     @api objectName;
     @api fields;
+    @api mode;
     @track records;
     @track headers;
     @track fieldList;
-    isLoading = false;
+    // isLoading = false;
     dateFieldInfo = {};
-    mode = 'view';
     localIdPrefix = 'local';
     localSequence = 1;
     saveDisabled = false;
@@ -24,6 +24,9 @@ export default class TableWrapper extends LightningElement {
     connectedCallback() {
         if (!this.label) {
             this.label = "";
+        }
+        if (String(this.mode).toLocaleLowerCase() != "edit") {
+            this.mode = "view";
         }
         this.headers = [];
         this.fieldList = [];
@@ -37,7 +40,7 @@ export default class TableWrapper extends LightningElement {
               this.dateFieldInfo.fields.push(field.fieldName);
             }
         });
-        this.isLoading = true;
+        // this.isLoading = true;
         getData({
             objectName: this.objectName,
             fields: this.fieldList
@@ -51,9 +54,10 @@ export default class TableWrapper extends LightningElement {
                 theme: 'error', 
                 label: 'Error retrieving records'
             });
-        }).finally(() => {
-            this.isLoading = false;
-        });
+        })
+        // .finally(() => {
+        //     this.isLoading = false;
+        // });
     }
 
     handleDelete(event) {
@@ -78,7 +82,7 @@ export default class TableWrapper extends LightningElement {
                         })
                     );
                 } else {
-                    this.isLoading = true;
+                    // this.isLoading = true;
                     deleteRecord(id)
                     .then(res => {
                         this.removeRecordWithId(id, this.records);
@@ -101,9 +105,9 @@ export default class TableWrapper extends LightningElement {
                             })
                         );
                     })
-                    .finally(() => {
-                        this.isLoading = false;
-                    });
+                    // .finally(() => {
+                    //     this.isLoading = false;
+                    // });
                 }
             }
         })
@@ -148,12 +152,9 @@ export default class TableWrapper extends LightningElement {
         }
     }
 
-    handelEditAndSave(event) {
-        const label = event.target.label;
-        if (label === 'Edit' && this.mode != 'edit') {
-            this.mode = 'edit';
-        }
-        else {
+    @api
+    handleEditAndSave(event) {
+        let promise = new Promise((resolve, reject) => {
             /**
              * Check is any required field's value is missing
              */
@@ -187,7 +188,7 @@ export default class TableWrapper extends LightningElement {
             this.fields.forEach(f => {
                 fieldTypes[f.fieldName] = f.type;
             });
-            this.isLoading = true;
+            // this.isLoading = true;
             console.log("Following records to be saved >> ", JSON.parse(JSON.stringify(recordsToSave)));
             saveData({
                 objectName: this.objectName,
@@ -195,11 +196,6 @@ export default class TableWrapper extends LightningElement {
                 fieldTypes: fieldTypes
             })
             .then(data => {
-                // this.records.forEach(r => {
-                //     if (String(r.Id).startsWith(localIdPrefix)) {
-                //         this.removeRecordWithId(r.Id, this.records);
-                //     }
-                // });
                 const newRecordList = [];
                 this.records.forEach(r => {
                     if (!String(r.Id).startsWith(this.localIdPrefix)) {
@@ -211,7 +207,8 @@ export default class TableWrapper extends LightningElement {
                 this.changeList = [];
                 this.checkDate();
                 this.mode = 'view';
-                this.saveDisabled = true;
+                // this.saveDisabled = true;
+                resolve(structuredClone(data));
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Success',
@@ -219,10 +216,10 @@ export default class TableWrapper extends LightningElement {
                         variant: 'success'
                     })
                 );
-                
             })
             .catch(error => {
                 console.log('Error saving the record(s) ', error);
+                reject(structuredClone(error));
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Error saving record(s)',
@@ -231,11 +228,11 @@ export default class TableWrapper extends LightningElement {
                     })
                 );
             })
-            .finally(() => {
-                this.isLoading = false;
-            });
-        }
-        
+            // .finally(() => {
+            //     this.isLoading = false;
+            // });
+        });
+        return promise;
     }
 
     checkDate() {
